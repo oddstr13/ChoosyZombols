@@ -1,6 +1,7 @@
 package no.openshell.oddstr13.minecraft.choosyzombols;
 
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collections;
@@ -15,6 +16,7 @@ import org.bukkit.configuration.Configuration;
  * @author Oddstr13
  */
 public class ChoosyZombols extends JavaPlugin {
+	private final ZombieEventListener zListener = new ZombieEventListener(this);
 
 	private PluginDescriptionFile pdfFile;
 	private Configuration config;
@@ -28,6 +30,9 @@ public class ChoosyZombols extends JavaPlugin {
 		this.pdfFile = getDescription();
 
 		refreshConfigFile();
+
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(zListener, this);
 
 		getLogger().log(Level.INFO, "{0} version {1} is enabled.",
 				new Object[] { pdfFile.getName(), pdfFile.getVersion() });
