@@ -19,12 +19,8 @@ public class ZombieEventListener implements Listener {
 	public void onZombiePickup(EntityPickupItemEvent event) {
 		if (plugin.getConfigEnabled()) {
 			Entity entity = event.getEntity();
-			String item_name = event.getItem().getItemStack().getType().getKey().toString();
-			if (plugin.getConfigDebug()) {
-				plugin.getLogger().log(Level.INFO, "Item {0} picked up by {1} @ {2}",
-						new Object[] { item_name, entity.getName(), entity.getLocation() });
-			}
 			if (entity instanceof Zombie) {
+				String item_name = event.getItem().getItemStack().getType().getKey().toString();
 				boolean in_list = plugin.getConfigList().contains(item_name);
 				boolean reject = plugin.getConfigReject();
 
