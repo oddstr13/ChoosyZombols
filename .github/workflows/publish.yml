@@ -1,0 +1,94 @@
+name: Publish Plugin
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      upload_url:
+        required: true
+        description: upload url of the release the assets need to get uploaded to
+
+env:
+  jdk_version: 8
+  minecraft_version: 1.13.2
+  minecraft_api: spigot
+  curseforge_project_id: 566445
+  curseforge_versions: Addons:1.13,Addons:1.16,Addons:1.17,Addons:1.18,Addons:1.18.1
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 11
+
+      - name: Set up JDK ${{ env.jdk_version }}
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ env.jdk_version }}
+          distribution: "adopt"
+          cache: maven
+
+      - name: Get short commit sha
+        id: vars
+        run: |2
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=sha::$(git rev-parse HEAD)"
+          TAG=$(git describe --tags --abbrev=0)
+          echo "::set-output name=tag::${TAG}"
+          echo "::set-output name=version::${TAG}"
+          echo "::set-output name=revs::$(git rev-list ${TAG}.. --count)"
+
+      - name: Build package
+        run: >- # Folded string, newlines stripped.
+          mvn --batch-mode --file pom.xml
+          -Dminecraft.version=${{ env.minecraft_version }}
+          -Dminecraft.api=${{ env.minecraft_api }}
+          -DoutputDirectory=dist
+          -Drevision=${{ steps.vars.outputs.version }}+build.${{ github.run_number }}.revs.${{ steps.vars.outputs.revs }}.sha.${{ steps.vars.outputs.sha_short }}
+          clean verify
+
+      - name: Get jar path
+        id: jar
+        run: |2
+          echo "::set-output name=file::$(find dist -iname '*.jar' | head -n 1)"
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-artifact
+          retention-days: 30
+          if-no-files-found: error
+          path: dist
+
+      - name: Upload GitHub Release Artifacts
+        uses: shogo82148/actions-upload-release-asset@v1
+        if: ${{ github.event_name == 'release' }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: "dist/*"
+          overwrite: true
+
+      - name: Upload GitHub Release Artifacts (Manual trigger)
+        uses: shogo82148/actions-upload-release-asset@v1
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          upload_url: ${{ github.event.inputs.upload_url }}
+          asset_path: "dist/*"
+          overwrite: true
+
+      - name: Upload to CurseForge
+        uses: oddstr13/curseforge-upload@odd-choices
+        if: ${{ github.event_name == 'release' }}
+        with:
+          token: ${{ secrets.CURSEFORGE_TOKEN }}
+          project_id: ${{ env.curseforge_project_id }}
+          game_endpoint: bukkit
+          file_path: ${{ steps.jar.outputs.file }}
+          changelog: ${{ github.event.release.body }}
+          display_name: ${{ github.event.release.name }}
+          game_versions: ${{ env.curseforge_versions }}
+          release_type: release

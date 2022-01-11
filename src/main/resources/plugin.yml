@@ -1,0 +1,8 @@
+api-version: 1.13
+main: "no.openshell.oddstr13.minecraft.choosyzombols.ChoosyZombols"
+name: "ChoosyZombols"
+version: "${project.version}"
+description: "Makes your zombies picky when lifting items."
+author: "Oddstr13"
+website: "https://github.com/oddstr13/ChoosyZombols"
+bukkit-id: 566445

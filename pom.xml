@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>no.openshell.oddstr13.minecraft</groupId>
+	<artifactId>choosyzombols</artifactId>
+	<version>${revision}</version>
+	<name>ChoosyZombols</name>
+	<url>https://github.com/oddstr13/ChoosyZombols</url>
+
+
+	<properties>
+		<revision>0.0.1-SNAPSHOT</revision>
+		<java.version>1.8</java.version>
+		<minecraft.version>1.18.1</minecraft.version>
+		<minecraft.api>spigot</minecraft.api> <!-- This default is not taken into account for profile activation -->
+		<minecraft.api.version>${minecraft.version}-R0.1-SNAPSHOT</minecraft.api.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<outputDirectory>target</outputDirectory>
+	</properties>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering> <!-- This enables ${} replacement in resource files -->
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<outputDirectory>${outputDirectory}</outputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>target-spigot</id>
+			<activation>
+				<activeByDefault>true</activeByDefault> <!-- This is what determines the default profile, not project properties-->
+				<property>
+					<name>minecraft.api</name>
+					<value>spigot</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.spigotmc</groupId>
+					<artifactId>spigot-api</artifactId>
+					<version>${minecraft.api.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>target-bukkit</id>
+			<activation>
+				<property>
+					<name>minecraft.api</name>
+					<value>bukkit</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+					<version>${minecraft.api.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
+
+	<repositories>
+		<repository>
+			<id>spigotmc-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+</project>
