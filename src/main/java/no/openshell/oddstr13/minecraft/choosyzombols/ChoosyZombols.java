@@ -2,6 +2,9 @@ package no.openshell.oddstr13.minecraft.choosyzombols;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.logging.Level;
+
 import org.bukkit.configuration.Configuration;
 
 /**
@@ -14,17 +17,18 @@ public class ChoosyZombols extends JavaPlugin {
 	private PluginDescriptionFile pdfFile;
 	public Configuration config;
 
-	public void onDisable() {
-		System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " is disabled.");
-	}
-
 	public void onEnable() {
 		this.pdfFile = getDescription();
 
 		refreshConfigFile();
 
-		System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled.");
+		getLogger().log(Level.INFO, "{0} version {1} is enabled.",
+				new Object[] { pdfFile.getName(), pdfFile.getVersion() });
+	}
 
+	public void onDisable() {
+		getLogger().log(Level.INFO, "{0} version {1} is disabled.",
+				new Object[] { pdfFile.getName(), pdfFile.getVersion() });
 	}
 
 	public void refreshConfigFile() {
