@@ -1,0 +1,21 @@
+enabled: true
+debug: false
+reject: true
+list:
+  - minecraft:egg
+  - minecraft:glow_ink_sack
+  - minecraft:ink_sack
+  - minecraft:pufferfish
+  - minecraft:slime_ball
+  - minecraft:tropical_fish
+
+  - minecraft:kelp
+  - minecraft:stick
+  - minecraft:sugar_cane
+
+  - minecraft:arrow
+  - minecraft:bone
+  - minecraft:rotten_flesh
+  - minecraft:spider_eye
+  - minecraft:string
+  - minecraft:gunpowder
